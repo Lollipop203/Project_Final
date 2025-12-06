@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Irrigation System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-seedling"></i>
+                    <h1>Smart Irrigation</h1>
+                </div>
+                <div class="connection-status">
+                    <div class="status-indicator" id="statusIndicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Đang kết nối...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+
+            <!-- Control Panel -->
+            <section class="control-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-sliders-h"></i> Điều khiển</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="control-grid">
+                            <!-- Auto Mode Toggle -->
+                            <div class="control-item">
+                                <div class="control-info">
+                                    <i class="fas fa-robot"></i>
+                                    <span>Chế độ tự động</span>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" id="autoModeToggle" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+
+                            <!-- Pump Control -->
+                            <div class="control-item">
+                                <div class="control-info">
+                                    <i class="fas fa-tint"></i>
+                                    <span>Máy bơm</span>
+                                </div>
+                                <button class="btn btn-control" id="pumpBtn" disabled>
+                                    <i class="fas fa-power-off"></i>
+                                    <span>TẮT</span>
+                                </button>
+                            </div>
+
+                            <!-- LED Control -->
+                            <div class="control-item">
+                                <div class="control-info">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <span>Đèn LED</span>
+                                </div>
+                                <button class="btn btn-control" id="ledBtn" disabled>
+                                    <i class="fas fa-power-off"></i>
+                                    <span>TẮT</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sensor Data -->
+            <section class="sensor-grid">
+                <!-- Temperature -->
+                <div class="card sensor-card">
+                    <div class="sensor-icon temperature">
+                        <i class="fas fa-temperature-high"></i>
+                    </div>
+                    <div class="sensor-info">
+                        <h3>Nhiệt độ</h3>
+                        <div class="sensor-value">
+                            <span id="temperature">--</span>
+                            <span class="unit">°C</span>
+                        </div>
+                        <div class="sensor-time" id="tempTime">Đang cập nhật...</div>
+                    </div>
+                </div>
+
+                <!-- Humidity -->
+                <div class="card sensor-card">
+                    <div class="sensor-icon humidity">
+                        <i class="fas fa-droplet"></i>
+                    </div>
+                    <div class="sensor-info">
+                        <h3>Độ ẩm không khí</h3>
+                        <div class="sensor-value">
+                            <span id="humidity">--</span>
+                            <span class="unit">%</span>
+                        </div>
+                        <div class="sensor-time" id="humTime">Đang cập nhật...</div>
+                    </div>
+                </div>
+
+                <!-- Soil Moisture -->
+                <div class="card sensor-card">
+                    <div class="sensor-icon soil">
+                        <i class="fas fa-seedling"></i>
+                    </div>
+                    <div class="sensor-info">
+                        <h3>Độ ẩm đất</h3>
+                        <div class="sensor-value">
+                            <span id="soilMoisture">--</span>
+                            <span class="unit">%</span>
+                        </div>
+                        <div class="sensor-time" id="soilTime">Đang cập nhật...</div>
+                    </div>
+                </div>
+
+                <!-- Light Level -->
+                <div class="card sensor-card">
+                    <div class="sensor-icon light">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div class="sensor-info">
+                        <h3>Ánh sáng</h3>
+                        <div class="sensor-value">
+                            <span id="lightLevel">--</span>
+                            <span class="unit"></span>
+                        </div>
+                        <div class="sensor-time" id="lightTime">Đang cập nhật...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Charts -->
+            <section class="charts-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-chart-line"></i> Biểu đồ theo dõi</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="sensorChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings -->
+            <section class="settings-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-cog"></i> Cài đặt ngưỡng</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label for="soilThreshold">
+                                    <i class="fas fa-seedling"></i>
+                                    Ngưỡng độ ẩm đất (%)
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" id="soilThreshold" value="30" min="0" max="100">
+                                    <button class="btn btn-primary" id="updateSoilBtn">
+                                        <i class="fas fa-check"></i> Cập nhật
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="setting-item">
+                                <label for="lightThreshold">
+                                    <i class="fas fa-sun"></i>
+                                    Ngưỡng ánh sáng
+                                </label>
+                                <div class="input-group">
+                                    <input type="number" id="lightThreshold" value="200" min="0" max="1023">
+                                    <button class="btn btn-primary" id="updateLightBtn">
+                                        <i class="fas fa-check"></i> Cập nhật
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; Smart Irrigation System. Made with group 8</p>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
+    <!-- App Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+# Ignore configuration files with sensitive data
+esp32_firmware/config.h
+web_dashboard/firebase-config.js
+
+# Ignore build files
+*.bin
+*.elf
+build/
+.pio/
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore node modules if using npm
+node_modules/
+package-lock.json
+
+# Ignore Firebase cache
+.firebase/
+firebase-debug.log
+
+# Keep template files
+!esp32_firmware/config.h.template
+!web_dashboard/firebase-config.js.template
