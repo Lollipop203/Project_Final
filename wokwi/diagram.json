@@ -242,8 +242,16 @@
       ]
     ],
     [
-      "led1:A",
+      "relay2:COM",
+      "esp:3V3",
+      "red",
+      [
+        "v0"
+      ]
+    ],
+    [
       "relay2:NO",
+      "led1:A",
       "red",
       [
         "v0"

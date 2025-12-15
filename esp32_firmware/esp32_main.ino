@@ -94,18 +94,65 @@ void sendToFirebase(SensorData data) {
   
   String basePath = "/devices/" + String(DEVICE_ID);
   
-  // Send sensor data
+  // 1. Update current sensor values (for real-time display)
   Firebase.setFloat(firebaseData, basePath + "/sensors/temperature", data.temperature);
   Firebase.setFloat(firebaseData, basePath + "/sensors/humidity", data.humidity);
   Firebase.setInt(firebaseData, basePath + "/sensors/soilMoisture", data.soilMoisture);
   Firebase.setInt(firebaseData, basePath + "/sensors/lightLevel", data.lightLevel);
   Firebase.setInt(firebaseData, basePath + "/sensors/timestamp", millis());
   
-  // Send actuator states
+  // 2. Save to history (last 10 records)
+  FirebaseJson json;
+  json.set("temperature", data.temperature);
+  json.set("humidity", data.humidity);
+  json.set("soilMoisture", data.soilMoisture);
+  json.set("lightLevel", data.lightLevel);
+  json.set("timestamp", millis());
+  json.set("pump", getPumpState());
+  json.set("led", getLEDState());
+  
+  // Push new record to history
+  String historyPath = basePath + "/history";
+  if (Firebase.pushJSON(firebaseData, historyPath, json)) {
+    Serial.println("✓ History saved");
+    
+    // Cleanup: Keep only last 10 records
+    if (Firebase.getJSON(firebaseData, historyPath)) {
+      FirebaseJsonData jsonData;
+      FirebaseJson &historyJson = firebaseData.jsonObject();
+      
+      // Count records
+      int count = 0;
+      String oldestKey = "";
+      
+      // Get all keys
+      size_t len = historyJson.iteratorBegin();
+      for (size_t i = 0; i < len; i++) {
+        String key;
+        String value;
+        int type = 0;
+        historyJson.iteratorGet(i, type, key, value);
+        
+        if (count == 0) {
+          oldestKey = key;  // First key is oldest (Firebase auto-sorts)
+        }
+        count++;
+      }
+      historyJson.iteratorEnd();
+      
+      // Delete oldest if more than 10
+      if (count > 10 && oldestKey.length() > 0) {
+        Firebase.deleteNode(firebaseData, historyPath + "/" + oldestKey);
+        Serial.println("✓ Old history cleaned");
+      }
+    }
+  }
+  
+  // 3. Update actuator states
   Firebase.setBool(firebaseData, basePath + "/actuators/pump", getPumpState());
   Firebase.setBool(firebaseData, basePath + "/actuators/led", getLEDState());
   
-  // Send settings
+  // 4. Update settings
   Firebase.setBool(firebaseData, basePath + "/settings/autoMode", autoMode);
   
   Serial.println("✓ Data sent to Firebase");
